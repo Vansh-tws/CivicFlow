@@ -167,13 +167,13 @@ const wardData = [
 
 const monsoonData = [
   {
-    period: "Monsoon",
+    season: "Monsoon",
     complaint_count: 320638,
     avg_resolution_days: 16.74,
     resolved_complaints: 185666,
   },
   {
-    period: "Non-Monsoon",
+    season: "Non-Monsoon",
     complaint_count: 639362,
     avg_resolution_days: 12.23,
     resolved_complaints: 370348,
