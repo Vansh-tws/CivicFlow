@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 5000;
 
 // =====================================================
 // CIVICFLOW DEMO DATA
+// Deployment version - no PostgreSQL required
 // =====================================================
 
 const summary = {
@@ -17,8 +18,8 @@ const summary = {
   resolved_complaints: 556014,
   resolution_rate: 57.92,
   avg_resolution_days: 13.73,
-  wards: 24,
-  categories: 13,
+  total_wards: 24,
+  total_categories: 13,
 };
 
 // =====================================================
@@ -26,19 +27,58 @@ const summary = {
 // =====================================================
 
 const categoryData = [
-  { complaint_category: "Pothole / Road Damage", complaint_count: 172475 },
-  { complaint_category: "Water Supply Disruption", complaint_count: 153875 },
-  { complaint_category: "Solid Waste / Garbage", complaint_count: 134953 },
-  { complaint_category: "Drainage Overflow / Flooding", complaint_count: 105867 },
-  { complaint_category: "Street Light Failure", complaint_count: 86380 },
-  { complaint_category: "Illegal Construction", complaint_count: 66867 },
-  { complaint_category: "Encroachment", complaint_count: 57630 },
-  { complaint_category: "Tree Fallen / Dangerous Tree", complaint_count: 48117 },
-  { complaint_category: "Public Toilet Condition", complaint_count: 38225 },
-  { complaint_category: "Water Leakage / Pipe Burst", complaint_count: 38121 },
-  { complaint_category: "Noise / Air Pollution", complaint_count: 28752 },
-  { complaint_category: "Stray Animal Menace", complaint_count: 18962 },
-  { complaint_category: "Health / Epidemic", complaint_count: 9776 },
+  {
+    complaint_category: "Pothole / Road Damage",
+    complaint_count: 172475,
+  },
+  {
+    complaint_category: "Water Supply Disruption",
+    complaint_count: 153875,
+  },
+  {
+    complaint_category: "Solid Waste / Garbage",
+    complaint_count: 134953,
+  },
+  {
+    complaint_category: "Drainage Overflow / Flooding",
+    complaint_count: 105867,
+  },
+  {
+    complaint_category: "Street Light Failure",
+    complaint_count: 86380,
+  },
+  {
+    complaint_category: "Illegal Construction",
+    complaint_count: 66867,
+  },
+  {
+    complaint_category: "Encroachment",
+    complaint_count: 57630,
+  },
+  {
+    complaint_category: "Tree Fallen / Dangerous Tree",
+    complaint_count: 48117,
+  },
+  {
+    complaint_category: "Public Toilet Condition",
+    complaint_count: 38225,
+  },
+  {
+    complaint_category: "Water Leakage / Pipe Burst",
+    complaint_count: 38121,
+  },
+  {
+    complaint_category: "Noise / Air Pollution",
+    complaint_count: 28752,
+  },
+  {
+    complaint_category: "Stray Animal Menace",
+    complaint_count: 18962,
+  },
+  {
+    complaint_category: "Health / Epidemic",
+    complaint_count: 9776,
+  },
 ];
 
 // =====================================================
@@ -85,6 +125,7 @@ const wardData = [
     zone: "Western",
     complaint_count: 59673,
     avg_resolution_days: 13.36,
+    satisfaction_rate: 76.8,
   },
   {
     ward_code: "L",
@@ -92,6 +133,7 @@ const wardData = [
     zone: "Eastern",
     complaint_count: 59459,
     avg_resolution_days: 16.04,
+    satisfaction_rate: 76.8,
   },
   {
     ward_code: "M/E",
@@ -99,6 +141,7 @@ const wardData = [
     zone: "Eastern",
     complaint_count: 49648,
     avg_resolution_days: 13.38,
+    satisfaction_rate: 76.8,
   },
   {
     ward_code: "P/N",
@@ -106,13 +149,15 @@ const wardData = [
     zone: "Western",
     complaint_count: 49548,
     avg_resolution_days: 13.46,
+    satisfaction_rate: 76.8,
   },
   {
     ward_code: "F/N",
     ward_area: "Sion–Dharavi",
     zone: "City",
     complaint_count: 49375,
-    avg_resolution_days: 16.10,
+    avg_resolution_days: 16.1,
+    satisfaction_rate: 76.8,
   },
 ];
 
@@ -200,24 +245,59 @@ app.get("/api/dashboard/summary", (req, res) => {
   res.json(summary);
 });
 
+// Categories
 app.get("/api/dashboard/category", (req, res) => {
-  res.json(categoryData);
+  res.json(
+    categoryData.map((item) => ({
+      ...item,
+      total_complaints: Number(item.complaint_count),
+    }))
+  );
 });
 
+// Yearly
 app.get("/api/dashboard/yearly", (req, res) => {
-  res.json(yearlyData);
+  res.json(
+    yearlyData.map((item) => ({
+      ...item,
+      year: Number(item.year),
+      total_complaints: Number(item.complaint_count),
+    }))
+  );
 });
 
+// Monthly
 app.get("/api/dashboard/monthly", (req, res) => {
-  res.json(monthlyData);
+  res.json(
+    monthlyData.map((item) => ({
+      ...item,
+      month: Number(item.month),
+      total_complaints: Number(item.complaint_count),
+    }))
+  );
 });
 
+// Wards
 app.get("/api/dashboard/wards", (req, res) => {
-  res.json(wardData);
+  res.json(
+    wardData.map((item) => ({
+      ...item,
+      total_complaints: Number(item.complaint_count),
+      avg_resolution_days: Number(item.avg_resolution_days),
+      satisfaction_rate: Number(item.satisfaction_rate),
+    }))
+  );
 });
 
+// Monsoon
 app.get("/api/dashboard/monsoon", (req, res) => {
-  res.json(monsoonData);
+  res.json(
+    monsoonData.map((item) => ({
+      ...item,
+      total_complaints: Number(item.complaint_count),
+      resolved_complaints: Number(item.resolved_complaints),
+    }))
+  );
 });
 
 // =====================================================
@@ -290,53 +370,97 @@ app.get("/api/analytics/olap", (req, res) => {
 
   let data = [];
 
+  // ---------------------------------------------------
+  // YEAR
+  // ---------------------------------------------------
+
   if (groupBy === "year") {
-    data = yearlyData.map((row) => ({
+    let source = [...yearlyData];
+
+    if (year) {
+      source = source.filter(
+        (row) => String(row.year) === String(year)
+      );
+    }
+
+    data = source.map((row) => ({
       dimension: String(row.year),
-      total_complaints: row.complaint_count,
+      total_complaints: Number(row.complaint_count),
       avg_resolution_days: 13.73,
       resolved_complaints: Math.round(
-        row.complaint_count * 0.5792
+        Number(row.complaint_count) * 0.5792
       ),
       resolution_rate: 57.92,
     }));
   }
+
+  // ---------------------------------------------------
+  // MONTH
+  // ---------------------------------------------------
 
   else if (groupBy === "month") {
     data = monthlyData.map((row) => ({
       dimension: String(row.month),
-      total_complaints: row.complaint_count,
+      total_complaints: Number(row.complaint_count),
       avg_resolution_days: 13.73,
       resolved_complaints: Math.round(
-        row.complaint_count * 0.5792
+        Number(row.complaint_count) * 0.5792
       ),
       resolution_rate: 57.92,
     }));
   }
+
+  // ---------------------------------------------------
+  // WARD
+  // ---------------------------------------------------
 
   else if (groupBy === "ward") {
-    data = wardData.map((row) => ({
+    let source = [...wardData];
+
+    if (ward) {
+      source = source.filter(
+        (row) => row.ward_code === ward
+      );
+    }
+
+    data = source.map((row) => ({
       dimension: row.ward_code,
-      total_complaints: row.complaint_count,
-      avg_resolution_days: row.avg_resolution_days,
+      total_complaints: Number(row.complaint_count),
+      avg_resolution_days: Number(row.avg_resolution_days),
       resolved_complaints: Math.round(
-        row.complaint_count * 0.5792
+        Number(row.complaint_count) * 0.5792
       ),
       resolution_rate: 57.92,
     }));
   }
 
+  // ---------------------------------------------------
+  // CATEGORY
+  // ---------------------------------------------------
+
   else if (groupBy === "category") {
-    data = categoryData.map((row) => ({
+    let source = [...categoryData];
+
+    if (category) {
+      source = source.filter(
+        (row) => row.complaint_category === category
+      );
+    }
+
+    data = source.map((row) => ({
       dimension: row.complaint_category,
-      total_complaints: row.complaint_count,
+      total_complaints: Number(row.complaint_count),
       avg_resolution_days: 13.73,
       resolved_complaints: Math.round(
-        row.complaint_count * 0.5792
+        Number(row.complaint_count) * 0.5792
       ),
       resolution_rate: 57.92,
     }));
   }
+
+  // ---------------------------------------------------
+  // INVALID DIMENSION
+  // ---------------------------------------------------
 
   else {
     return res.status(400).json({
@@ -345,13 +469,24 @@ app.get("/api/analytics/olap", (req, res) => {
     });
   }
 
-  res.json(data);
+  // IMPORTANT:
+  // Frontend expects response.data
+  res.json({
+    groupBy,
+    filters: {
+      year: year || null,
+      ward: ward || null,
+      category: category || null,
+    },
+    data,
+  });
 });
 
 // =====================================================
 // DATA MINING
 // =====================================================
 
+// Statistical anomaly detection
 app.get("/api/mining/anomalies", (req, res) => {
   res.json([
     {
@@ -373,6 +508,7 @@ app.get("/api/mining/anomalies", (req, res) => {
   ]);
 });
 
+// Recurring / seasonal pattern detection
 app.get("/api/mining/patterns", (req, res) => {
   res.json([
     {
@@ -407,5 +543,7 @@ app.get("/api/mining/patterns", (req, res) => {
 // =====================================================
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`CivicFlow Demo API running on port ${PORT}`);
+  console.log(
+    `CivicFlow Demo API running on port ${PORT}`
+  );
 });
