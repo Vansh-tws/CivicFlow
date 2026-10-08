@@ -1172,10 +1172,8 @@ function App() {
                         item.z_score
                       );
 
-                    const date =
-                      new Date(
-                        item.complaint_month
-                      );
+                    const month=
+                    Number(item.complaint_month);
 
                     return (
                       <tr key={index}>
@@ -1186,11 +1184,7 @@ function App() {
                         </td>
 
                         <td>
-                          {monthName(
-                            date.getUTCMonth() + 1
-                          )}
-                          {" "}
-                          {date.getUTCFullYear()}
+                          {monthName(month)}
                         </td>
 
                         <td>
