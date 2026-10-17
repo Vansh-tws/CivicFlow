@@ -3,9 +3,9 @@ import { useState } from "react";
 import axios from "axios";
 import "./ResolutionPredictor.css";
 
-const API =
+const API_URL =
   import.meta.env.VITE_API_URL ||
-  "http://localhost:5000/api";
+  "https://civicflow-dejz.onrender.com/api";
 
 const INITIAL_VALUES = {
   year: new Date().getFullYear(),
