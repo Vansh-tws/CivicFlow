@@ -1,7 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
+const { execFile } = require("child_process");
+const path = require("path");
+const { promisify } = require("util");
 require("dotenv").config();
+
+const execFileAsync = promisify(execFile);
 
 const app = express();
 const PORT = 5000;
@@ -17,13 +22,25 @@ app.use(express.json());
 // POSTGRESQL CONNECTION
 // =====================================================
 
-const pool = new Pool({
-  user: process.env.DB_USER || "postgres",
-  host: process.env.DB_HOST || "localhost",
-  database: process.env.DB_NAME || "CivicFlow",
-  password: process.env.DB_PASSWORD || "postgres",
-  port: Number(process.env.DB_PORT) || 5432,
-});
+
+const { Pool } = require("pg");
+
+const pool = process.env.DATABASE_URL
+  ? new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+      max: 5,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
+    })
+  : new Pool({
+      user: process.env.DB_USER || "postgres",
+      host: process.env.DB_HOST || "localhost",
+      database: process.env.DB_NAME || "CivicFlow",
+      password: process.env.DB_PASSWORD || "postgres",
+      port: Number(process.env.DB_PORT) || 5432,
+    });
+
 
 // =====================================================
 // BASIC ROUTE
@@ -633,10 +650,7 @@ app.get("/api/analytics/olap", async (req, res) => {
       category,
     } = req.query;
 
-    // -------------------------------------------------
     // Allowed OLAP dimensions
-    // -------------------------------------------------
-
     const allowedDimensions = {
       year: "d.year",
       month: "d.month",
@@ -651,38 +665,35 @@ app.get("/api/analytics/olap", async (req, res) => {
       });
     }
 
-    const groupColumn =
-      allowedDimensions[groupBy];
+    const groupColumn = allowedDimensions[groupBy];
 
-    // -------------------------------------------------
     // Build filters
-    // -------------------------------------------------
-
     const conditions = [];
     const values = [];
 
     // Slice by year
     if (year) {
-      values.push(Number(year));
+      const numericYear = Number(year);
 
-      conditions.push(
-        `d.year = $${values.length}`
-      );
+      if (!Number.isInteger(numericYear)) {
+        return res.status(400).json({
+          error: "Year must be a valid integer.",
+        });
+      }
+
+      values.push(numericYear);
+      conditions.push(`d.year = $${values.length}`);
     }
 
     // Dice by ward
     if (ward) {
       values.push(ward);
-
-      conditions.push(
-        `w.ward_code = $${values.length}`
-      );
+      conditions.push(`w.ward_code = $${values.length}`);
     }
 
     // Dice by category
     if (category) {
       values.push(category);
-
       conditions.push(
         `cat.complaint_category = $${values.length}`
       );
@@ -693,21 +704,11 @@ app.get("/api/analytics/olap", async (req, res) => {
         ? `WHERE ${conditions.join(" AND ")}`
         : "";
 
-    // -------------------------------------------------
-    // STAR SCHEMA OLAP QUERY
-    //
-    // fact_complaints
-    //      |
-    //      +---- dim_date
-    //      |
-    //      +---- dim_ward
-    //      |
-    //      +---- dim_category
-    // -------------------------------------------------
+    // Star schema OLAP query:
+    // fact_complaints joins dim_date, dim_ward and dim_category.
 
     const query = `
       SELECT
-
         ${groupColumn} AS dimension,
 
         COUNT(*) AS total_complaints,
@@ -749,29 +750,115 @@ app.get("/api/analytics/olap", async (req, res) => {
       ORDER BY ${groupColumn}
     `;
 
-    const result =
-      await pool.query(query, values);
+    const result = await pool.query(query, values);
 
     res.json({
       groupBy,
-
       filters: {
         year: year || null,
         ward: ward || null,
         category: category || null,
       },
-
       data: result.rows,
     });
-
   } catch (error) {
-    console.error(
-      "OLAP analytics error:",
-      error
-    );
+    console.error("OLAP analytics error:", error);
 
     res.status(500).json({
       error: "Failed to load OLAP analytics",
+    });
+  }
+});
+
+// =====================================================
+// RESOLUTION-TIME PREDICTION (MACHINE LEARNING)
+// =====================================================
+
+app.post("/api/mining/predict-resolution", async (req, res) => {
+  try {
+    // Accept either:
+    // { "complaint": { ...features } }
+    // or the feature object directly.
+    const complaint =
+      req.body &&
+      req.body.complaint &&
+      typeof req.body.complaint === "object"
+        ? req.body.complaint
+        : req.body;
+
+    if (
+      !complaint ||
+      typeof complaint !== "object" ||
+      Array.isArray(complaint)
+    ) {
+      return res.status(400).json({
+        error: "Send complaint details as a JSON object.",
+      });
+    }
+
+    if (!complaint.complaint_category) {
+      return res.status(400).json({
+        error: "complaint_category is required.",
+      });
+    }
+
+    const pythonScript = path.resolve(
+      __dirname,
+      "..",
+      "Mining",
+      "predict_resolution.py"
+    );
+
+    const pythonExecutable =
+      process.env.PYTHON_EXECUTABLE || "python";
+
+    const { stdout } = await execFileAsync(
+      pythonExecutable,
+      [pythonScript, JSON.stringify(complaint)],
+      {
+        cwd: path.resolve(__dirname, ".."),
+        timeout: 30000,
+        maxBuffer: 1024 * 1024,
+        windowsHide: true,
+      }
+    );
+
+    const prediction = JSON.parse(stdout.trim());
+
+    if (
+      typeof prediction.estimated_resolution_days !== "number" ||
+      !Number.isFinite(prediction.estimated_resolution_days)
+    ) {
+      throw new Error(
+        "Prediction script returned an invalid result."
+      );
+    }
+
+    return res.json({
+      success: true,
+      estimated_resolution_days:
+        prediction.estimated_resolution_days,
+      unit: "days",
+      model: "resolution_time_model",
+      note:
+        "This is an estimate, not a guarantee. Model test MAE was 7.51 days.",
+    });
+  } catch (error) {
+    console.error(
+      "Resolution-time prediction error:",
+      error.message
+    );
+
+    if (error.code === "ENOENT") {
+      return res.status(500).json({
+        error:
+          "Python was not found. Set PYTHON_EXECUTABLE in Backend/.env to your Python executable if needed.",
+      });
+    }
+
+    return res.status(500).json({
+      error:
+        "Failed to predict resolution time. Check the Python model and script paths.",
     });
   }
 });

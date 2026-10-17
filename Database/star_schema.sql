@@ -1,5 +1,5 @@
 -- ============================================================
--- CivicFlow - Star Schema Data Warehouse
+-- CivicFlow - Star Schema Data Warehouse (50k deployment dataset)
 -- ============================================================
 -- Source table:
 --     civic_complaints
@@ -125,6 +125,14 @@ CREATE TABLE IF NOT EXISTS fact_complaints (
         FOREIGN KEY (department_key)
         REFERENCES dim_department(department_key)
 );
+
+
+-- ============================================================
+-- 5b. CLEAR OLD WAREHOUSE DATA (safe to re-run this script)
+-- ============================================================
+
+TRUNCATE fact_complaints, dim_date, dim_ward, dim_category, dim_department
+RESTART IDENTITY CASCADE;
 
 
 -- ============================================================
@@ -324,6 +332,14 @@ ON fact_complaints(severity);
 
 
 -- ============================================================
+-- 11b. REFRESH PLANNER STATISTICS
+-- ============================================================
+
+ANALYZE civic_complaints;
+ANALYZE fact_complaints;
+
+
+-- ============================================================
 -- 12. VERIFICATION
 -- ============================================================
 
@@ -369,10 +385,10 @@ FROM dim_department;
 
 
 -- ============================================================
--- EXPECTED MAIN RESULTS
+-- EXPECTED MAIN RESULTS (50k deployment dataset)
 -- ============================================================
--- Source complaints : 960000
--- Fact complaints   : 960000
+-- Source complaints : 50000
+-- Fact complaints   : 50000 (must equal source complaints)
 -- Wards             : 24
 -- Categories        : 13
 -- ============================================================

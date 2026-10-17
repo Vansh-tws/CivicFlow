@@ -1,0 +1,165 @@
+
+.rp-card {
+  scroll-margin-top: 24px;
+}
+
+.rp-notice {
+  margin: 12px 0;
+  padding: 10px 13px;
+  border: 1px solid #bfdbfe;
+  border-radius: 9px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.rp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.rp-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.rp-field input,
+.rp-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  box-sizing: border-box;
+  padding: 7px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #111827;
+  font: inherit;
+  font-size: 13px;
+}
+
+.rp-field input:focus,
+.rp-field select:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+  border-color: #2563eb;
+}
+
+.rp-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.rp-button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.rp-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.rp-result {
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  background: #eff6ff;
+}
+
+.rp-result span {
+  display: block;
+  color: #1e40af;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rp-result strong {
+  display: block;
+  margin: 6px 0;
+  color: #1d4ed8;
+  font-size: clamp(26px, 3vw, 34px);
+  font-weight: 700;
+}
+
+.rp-result p,
+.rp-note {
+  margin-bottom: 0;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.rp-error {
+  margin-top: 12px;
+  padding: 11px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.rp-error p {
+  margin-bottom: 0;
+  overflow-wrap: anywhere;
+}
+
+.rp-note {
+  margin-top: 12px;
+}
+
+/* Collapsible additional model features */
+.rp-advanced {
+  margin: 12px 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.rp-advanced summary {
+  padding: 11px 13px;
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rp-advanced[open] {
+  padding-bottom: 4px;
+}
+
+.rp-advanced .rp-grid {
+  padding: 0 12px;
+  margin-top: 8px;
+}
+
+@media (max-width: 600px) {
+  .rp-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .rp-button {
+    width: 100%;
+  }
+}
