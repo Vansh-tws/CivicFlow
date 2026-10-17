@@ -23,7 +23,7 @@ app.use(express.json());
 // =====================================================
 
 
-const { Pool } = require("pg");
+
 
 const pool = process.env.DATABASE_URL
   ? new Pool({
