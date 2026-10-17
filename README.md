@@ -1,129 +1,163 @@
-# CivicFlow
+# CivicFlow — Municipal Complaint Intelligence
 
-> Municipal Complaint Analytics Platform using Data Warehousing, OLAP and Data Mining
+CivicFlow is a municipal complaint analytics and data mining project designed to explore civic complaints, resolution performance, ward-level patterns, and municipal service delivery.
 
-CivicFlow is a data-driven municipal complaint analytics platform designed to transform large-scale civic complaint data into meaningful insights for better understanding of complaint volume, resolution performance, seasonal trends, ward-level issues, anomalies and recurring complaint patterns.
+## Live Project Links
 
-The project demonstrates a practical **Data Warehousing and Data Mining (DWM)** workflow using data cleaning, ETL, dimensional modeling, Star Schema, OLAP analytics, statistical anomaly detection and pattern analysis through an interactive web dashboard.
+- **Frontend Application:** Verify the active production domain in Vercel and add it here.
+- **Frontend Link(Vercel):** [https://civic-flow-zeta.vercel.app/](https://civic-flow-zeta.vercel.app/)
+- **Backend API:** [https://civicflow-dejz.onrender.com](https://civicflow-dejz.onrender.com)
+- **Dashboard Summary API:** [https://civicflow-dejz.onrender.com/api/dashboard/summary](https://civicflow-dejz.onrender.com/api/dashboard/summary)
+- **GitHub Repository:** [https://github.com/Vansh-tws/CivicFlow](https://github.com/Vansh-tws/CivicFlow)
 
----
+## Project Overview
 
-## 🚀 Live Demo
+CivicFlow provides a dashboard for viewing municipal complaint statistics and exploring complaint trends. It connects a React frontend to a Node.js backend and a PostgreSQL database hosted on Neon.
 
-### 🌐 Frontend
-https://civic-flow-phi.vercel.app/
+The project includes dashboard analytics, complaint information, data exploration, and a resolution prediction interface.
 
-### ⚙️ Backend API
-https://civicflow-1nmu.onrender.com/
+## Verified Dashboard Statistics
 
-### 💻 GitHub Repository
-https://github.com/Vansh-tws/CivicFlow
+The deployed dashboard summary API returned the following figures during testing:
 
----
+| Metric                  |      Value |
+| ----------------------- | ---------: |
+| Total complaints        |     50,000 |
+| Resolved complaints     |     28,871 |
+| Resolution rate         |     57.74% |
+| Average resolution time | 13.84 days |
+| Wards covered           |         24 |
+| Complaint categories    |         13 |
 
-## 📌 Project Overview
+These figures reflect the API response observed during deployment testing.
 
-Municipal organizations receive a large number of complaints related to roads, water supply, drainage, waste management, street lights, illegal construction and other civic services.
+## Key Features
 
-Raw complaint data alone is difficult to analyze efficiently.
+- Municipal complaint dashboard
+- Complaint resolution statistics
+- Ward and category analytics
+- Complaint trend visualization
+- Data mining and resolution prediction interface
+- PostgreSQL-backed data storage and analytics
 
-CivicFlow provides an analytical platform that converts large-scale complaint data into structured information using:
+## Technology Stack
 
-- Data Cleaning
-- ETL Processing
-- Data Warehousing
-- Star Schema
-- OLAP Operations
-- Statistical Data Mining
-- Anomaly Detection
-- Seasonal Pattern Analysis
-- Interactive Visualization
+| Component          | Technology             |
+| ------------------ | ---------------------- |
+| Frontend           | React, Vite            |
+| Backend            | Node.js, Express       |
+| Database           | PostgreSQL, Neon       |
+| Data visualization | Recharts               |
+| Frontend hosting   | Vercel                 |
+| Backend hosting    | Render                 |
+| Version control    | Git, GitHub            |
+| Data processing    | Python and SQL scripts |
 
-The goal is to help identify:
-
-- Which complaint categories occur most frequently?
-- Which wards receive the highest number of complaints?
-- How does resolution performance vary?
-- How does monsoon season affect complaints?
-- Which complaint patterns are recurring?
-- Which wards/months show unusual complaint spikes?
-
----
-
-# 🎯 Objectives
-
-The main objectives of CivicFlow are:
-
-1. Clean and preprocess large-scale municipal complaint data.
-2. Build a structured analytical data warehouse.
-3. Implement a formal Star Schema.
-4. Perform OLAP analysis on complaint data.
-5. Analyze complaint trends across years, months, wards and categories.
-6. Identify unusual complaint spikes using statistical anomaly detection.
-7. Detect recurring and seasonal complaint patterns.
-8. Present analytical results through an interactive dashboard.
-9. Provide a deployable full-stack application suitable for academic and placement demonstrations.
-
----
-
-# 🏗️ System Architecture
+## Repository Structure
 
 ```text
-                    ┌──────────────────────┐
-                    │   Raw Civic Dataset  │
-                    │    BMC Complaints    │
-                    └──────────┬───────────┘
-                               │
-                               ▼
-                    ┌──────────────────────┐
-                    │   Data Cleaning      │
-                    │       & ETL          │
-                    │      Python/Pandas   │
-                    └──────────┬───────────┘
-                               │
-                               ▼
-                    ┌──────────────────────┐
-                    │   Staging Dataset    │
-                    │ civic_complaints     │
-                    └──────────┬───────────┘
-                               │
-                               ▼
-              ┌────────────────────────────────────┐
-              │          DATA WAREHOUSE             │
-              │                                    │
-              │           Star Schema              │
-              │                                    │
-              │         fact_complaints            │
-              │                │                   │
-              │     ┌──────────┼──────────┐        │
-              │     ▼          ▼          ▼        │
-              │ dim_date   dim_ward   dim_category │
-              │                         │          │
-              │                  dim_department    │
-              └────────────────┬───────────────────┘
-                               │
-                               ▼
-                    ┌──────────────────────┐
-                    │    OLAP Analytics    │
-                    │                      │
-                    │ Roll-Up              │
-                    │ Drill-Down           │
-                    │ Slice                │
-                    │ Dice                 │
-                    └──────────┬───────────┘
-                               │
-                               ▼
-                    ┌──────────────────────┐
-                    │     Data Mining      │
-                    │                      │
-                    │ Anomaly Detection    │
-                    │ Pattern Analysis     │
-                    │ Seasonal Analysis    │
-                    └──────────┬───────────┘
-                               │
-                               ▼
-                    ┌──────────────────────┐
-                    │ Interactive Web      │
-                    │ Dashboard            │
-                    │ React + Recharts     │
-                    └──────────────────────┘
+CivicFlow/
+├── Backend/       # Backend API and server configuration
+├── Database/      # Database schemas and warehouse SQL
+├── Frontend/      # React application and components
+├── Mining/        # Data processing and mining scripts
+├── Data/          # Local datasets, subject to Git ignore rules
+└── README.md      # Project documentation
+```
+
+## Local Setup
+
+### Prerequisites
+
+- Node.js and npm
+- Git
+- PostgreSQL database access
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Vansh-tws/CivicFlow.git
+cd CivicFlow
+```
+
+### 2. Install backend dependencies
+
+```bash
+cd Backend
+npm install
+```
+
+Configure the backend database connection using environment variables. Keep database credentials private and never commit them to GitHub.
+
+Start the backend:
+
+```bash
+node server.js
+```
+
+### 3. Install frontend dependencies
+
+Open a separate terminal:
+
+```bash
+cd Frontend
+npm install
+```
+
+For local development, create a `Frontend/.env` file containing:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+Start the frontend:
+
+```bash
+npm run dev
+```
+
+Use this local API URL only when your backend is running locally on the configured port.
+
+## Production Configuration
+
+The frontend uses the `VITE_API_URL` environment variable to identify the backend API.
+
+For the Vercel production environment, configure:
+
+```env
+VITE_API_URL=https://civicflow-dejz.onrender.com/api
+```
+
+Redeploy the frontend after changing environment variables.
+
+Configure the database connection securely in Render's environment settings. Do not place passwords or connection strings in this README.
+
+## Deployment Architecture
+
+1. **GitHub** stores the source code.
+2. **Vercel** hosts the frontend.
+3. **Render** runs the backend API.
+4. **Neon** hosts the PostgreSQL database.
+
+Deployment behavior depends on the configuration of each hosting service.
+
+## Deployment Verification
+
+The following were verified during project deployment:
+
+- The Render backend health endpoint responded successfully.
+- The dashboard summary API returned complaint statistics.
+- The Vercel project showed a deployment marked Ready.
+
+The correct public frontend domain should be confirmed in Vercel before adding it to the Live Project Links section. Other API routes and prediction functionality should be tested individually.
+
+## Security
+
+- Do not commit `.env` files or database credentials.
+- Keep production secrets in hosting-provider environment settings.
+- Review files before committing datasets or other large files.
+- Avoid publishing sensitive or personally identifiable data.
+
+## License
+
+No open-source license has been specified for this repository yet.
