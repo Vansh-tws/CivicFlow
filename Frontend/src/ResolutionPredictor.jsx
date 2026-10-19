@@ -1,4 +1,4 @@
-
+﻿
 import { useState } from "react";
 import axios from "axios";
 import "./ResolutionPredictor.css";
@@ -223,7 +223,7 @@ export default function ResolutionPredictor() {
       }
 
       const response = await axios.post(
-        `${API}/mining/predict-resolution`,
+        `${API_URL}/mining/predict-resolution`,
         complaint
       );
 
@@ -308,7 +308,7 @@ export default function ResolutionPredictor() {
     >
       <div className="card-header">
         <div>
-          <h3>🤖 ML Resolution-Time Predictor</h3>
+          <h3>ðŸ¤– ML Resolution-Time Predictor</h3>
           <p>
             Estimate how long a civic complaint may take to resolve.
           </p>
@@ -384,3 +384,4 @@ export default function ResolutionPredictor() {
     </section>
   );
 }
+
