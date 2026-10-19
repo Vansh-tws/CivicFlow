@@ -141,23 +141,20 @@ Configure the database connection securely in Render's environment settings. Do 
 
 Deployment behavior depends on the configuration of each hosting service.
 
-## Deployment Verification
 
-The following were verified during project deployment:
+## Author & Ownership
 
-- The Render backend health endpoint responded successfully.
-- The dashboard summary API returned complaint statistics.
-- The Vercel project showed a deployment marked Ready.
+**CivicFlow — Civic Service Dashboard**
 
-The correct public frontend domain should be confirmed in Vercel before adding it to the Live Project Links section. Other API routes and prediction functionality should be tested individually.
+Created and developed by **Vansh Raut**.
 
-## Security
+This project demonstrates Data Warehousing, OLAP analysis,
+SQL analytics, and data mining techniques for municipal
+complaint data.
 
-- Do not commit `.env` files or database credentials.
-- Keep production secrets in hosting-provider environment settings.
-- Review files before committing datasets or other large files.
-- Avoid publishing sensitive or personally identifiable data.
+- GitHub: https://github.com/Vansh-tws/CivicFlow
+- Backend: https://civicflow-1nmu.onrender.com/
 
-## License
+Copyright (c) 2026 Vansh Raut.
+All rights reserved unless otherwise stated in the project's license.
 
-No open-source license has been specified for this repository yet.
