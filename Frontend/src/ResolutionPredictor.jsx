@@ -308,7 +308,7 @@ export default function ResolutionPredictor() {
     >
       <div className="card-header">
         <div>
-          <h3>ðŸ¤– ML Resolution-Time Predictor</h3>
+          <h3> ML Resolution-Time Predictor</h3>
           <p>
             Estimate how long a civic complaint may take to resolve.
           </p>
